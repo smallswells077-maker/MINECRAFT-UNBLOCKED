@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html style="width:100%;height:100%;background-color:black;">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
+<title>GX Launcher</title>
+<script type="text/javascript">
+"use strict";
+(function() {
+  var launchInterval = -1;
+  var launchCounter = 1;
+  var launchCountdownNumberElement = null;
+  var launchCountdownProgressElement = null;
+  var launchSkipCountdown = false;
+  var targetUrl = "https://gx-launcher.github.io";
+
+  function openTarget() {
+    var screen = document.getElementById("launch_countdown_screen");
+    if (screen && screen.parentNode) screen.parentNode.removeChild(screen);
+    document.body.style.backgroundColor = "black";
+    var frame = document.getElementById("game_frame");
+    // Load the target website into the full-screen frame (same container pattern as the source launcher)
+    frame.innerHTML = "";
+    var iframe = document.createElement("iframe");
+    iframe.src = targetUrl;
+    iframe.style.border = "0";
+    iframe.style.width = "100%";
+    iframe.style.height = "100%";
+    iframe.allow = "fullscreen; autoplay; clipboard-read; clipboard-write; camera; microphone; geolocation";
+    iframe.referrerPolicy = "no-referrer-when-downgrade";
+    frame.appendChild(iframe);
+    document.title = targetUrl;
+  }
+
+  var launchTick = function() {
+    if (launchCountdownNumberElement) {
+      launchCountdownNumberElement.innerText = "" + Math.max(0, Math.floor(6.0 - launchCounter * 0.06));
+    }
+    if (launchCountdownProgressElement) {
+      launchCountdownProgressElement.style.width = "" + Math.min(100, launchCounter) + "%";
+    }
+    if (++launchCounter > 100 || launchSkipCountdown) {
+      clearInterval(launchInterval);
+      setTimeout(openTarget, 50);
+    }
+  };
+
+  window.addEventListener("load", function() {
+    launchCountdownNumberElement = document.getElementById("launchCountdownNumber");
+    launchCountdownProgressElement = document.getElementById("launchCountdownProgress");
+    launchInterval = setInterval(launchTick, 50);
+    document.getElementById("skipCountdown").addEventListener("click", function() {
+      launchSkipCountdown = true;
+    });
+  });
+})();
+</script>
+</head>
+<body style="margin:0px;width:100%;height:100%;overflow:hidden;background-color:white;" id="game_frame">
+<div style="margin:0px;width:100%;height:100%;font-family:sans-serif;display:flex;align-items:center;user-select:none;" id="launch_countdown_screen">
+<div style="margin:auto;text-align:center;">
+<h1><span style="color:#AA0000;"></span></h1>
+<h3> </h3>
+<h2><span id="launchCountdownNumber">5</span>...</h2>
+<div style="border:2px solid black;width:100%;height:15px;padding:1px;margin-bottom:20vh;"><div id="launchCountdownProgress" style="background-color:#555555;width:0%;height:100%;"></div></div>
+<p style="margin-top:30px;"><button id="skipCountdown" autofocus>Skip</button></p>
+</div>
+</div>
+</body>
+</html>
